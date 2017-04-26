@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#notes
+#upstream naming convention is molecule_XXsolv_temp (on the folder)
+#the files additionally have a timestep added molecule_XXsolv_temp
+
 #assumptions
 # 1. upstream folder name will be used as the prefix of the input,prm,key filenames
 
@@ -44,3 +48,5 @@ sed -i 's/'"$UPSTREAM"'.*.prm/'"$DOWNSTREAM"'.prm/g' $BASE/$UPSTREAM/$DOWNSTREAM
 #might want to consider changing the job name in each of the sbatch scripts, or make a sbatch array
 cp $BASE/$UPSTREAM/molcas_sub $BASE/$UPSTREAM/$DOWNSTREAM/molcas_sub
 sed -i 's/file_name/'"$DOWNSTREAM"'/g' $BASE/$UPSTREAM/$DOWNSTREAM/molcas_sub
+
+find $BASE/$UPSTREAM/TMP -name $UPSTREAM*.$STEP -exec cp {} $BASE/$UPSTREAM/$DOWNSTREAM/$DOWNSTREAM.xyz \;
