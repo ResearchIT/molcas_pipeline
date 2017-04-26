@@ -39,8 +39,8 @@ find $BASE/$UPSTREAM -name $UPSTREAM*.input -exec cp {} $BASE/$UPSTREAM/$DOWNSTR
 find $BASE/$UPSTREAM -name $UPSTREAM*.prm -exec cp {} $BASE/$UPSTREAM/$DOWNSTREAM/$DOWNSTREAM.prm \;
 find $BASE/$UPSTREAM -name $UPSTREAM*.key -exec cp {} $BASE/$UPSTREAM/$DOWNSTREAM/$DOWNSTREAM.key \;
 
-sed -i 's/${UPSTREAM}*.prm/$DOWNSTREAM.prm/g' $BASE/$UPSTREAM/$DOWNSTREAM/$DOWNSTREAM.key
+sed -i 's/'"$UPSTREAM"'.*.prm/'"$DOWNSTREAM"'.prm/g' $BASE/$UPSTREAM/$DOWNSTREAM/$DOWNSTREAM.key
 
 #might want to consider changing the job name in each of the sbatch scripts, or make a sbatch array
 cp $BASE/$UPSTREAM/molcas_sub $BASE/$UPSTREAM/$DOWNSTREAM/molcas_sub
-sed -i 's/file_name/$DOWNSTREAM/g' $BASE/$UPSTREAM/$DOWNSTREAM/molcas_sub
+sed -i 's/file_name/'"$DOWNSTREAM"'/g' $BASE/$UPSTREAM/$DOWNSTREAM/molcas_sub
