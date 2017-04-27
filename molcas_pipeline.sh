@@ -5,14 +5,17 @@
 #the files additionally have a timestep added molecule_XXsolv_temp
 
 #assumptions
-# 1. PROJECT folder name will be used as the prefix of the input,prm,key filenames
-
+# project folder name will be used as the prefix of the input,prm,key,etc. filenames
+#
 
 #arguments:
-# b = ROOT directory - absolute full path of the folder
-#     which contains the folder with the initial molcas run
-# p = PROJECT folder - folder name of initial molcas run
-# s = step number for downstream
+# r) root folder (the base folder that your molcas project folder is located inside of), e.g. /work/LAS/some-lab/user/
+# p) project (the name of the project folder)
+# b) begintimestep
+# e) endtimestep
+# s) timestep size
+# d) dt (typically 41 = 1 femtosecond to be put in input file)
+# h) hop (energy hop flag to be put in input file)
 
 while getopts r:p:b:e:s:d:h: option
 do
