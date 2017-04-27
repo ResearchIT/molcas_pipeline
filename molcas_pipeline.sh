@@ -1,52 +1,64 @@
 #!/bin/bash
 
 #notes
-#upstream naming convention is molecule_XXsolv_temp (on the folder)
+#PROJECT naming convention is molecule_XXsolv_temp (on the folder)
 #the files additionally have a timestep added molecule_XXsolv_temp
 
 #assumptions
-# 1. upstream folder name will be used as the prefix of the input,prm,key filenames
+# 1. PROJECT folder name will be used as the prefix of the input,prm,key filenames
 
 
 #arguments:
 # b = base directory - absolute full path of the folder
 #     which contains the folder with the initial molcas run
-# u = upstream folder - folder name of initial molcas run
+# p = PROJECT folder - folder name of initial molcas run
 # s = step number for downstream
 
-while getopts b:u:s: option
+while getopts r:p:b:e:s:dt:hop: option
 do
         case "${option}"
         in
-                b) BASE=${OPTARG};;
-                u) UPSTREAM=${OPTARG};;
-                s) STEP=${OPTARG};;
+                r) BASE=${OPTARG};;
+                p) PROJECT=${OPTARG};;
+                b) BEGINTIMESTEP=${OPTARG};;
+                e) ENDTIMESTEP=${OPTARG};;
+                s) STEPSIZE${OPTARG};;
+                dt) DT=${OPTARG};;
+                hop) HOP=${OPTARG};;
         esac
 done
 
-DOWNSTREAM=Trajectory_${STEP}fs
+for ((STEP=$BEGINTIMESTEP; STEP<=$ENDTIMESTEP; STEP+=$STEPSIZE)); do
 
-if [ ! -d "$BASE/$UPSTREAM" ]; then
-  echo ERROR: Upstream folder path is incorrect
-  exit 1
-fi
+  DOWNSTREAM=Trajectory_${STEP}fs
 
-if [ -d "$BASE/$UPSTREAM/$DOWNSTREAM" ]; then
-  echo ERROR: Downstream folder path already exists
-  exit 1
-fi
+  if [ ! -d "$BASE/$PROJECT" ]; then
+    echo ERROR: PROJECT folder path is incorrect
+    exit 1
+  fi
+
+  if [ -d "$BASE/$PROJECT/$DOWNSTREAM" ]; then
+    echo ERROR: Downstream folder path already exists
+    exit 1
+  fi
 
 
-mkdir $BASE/$UPSTREAM/$DOWNSTREAM
+  mkdir $BASE/$PROJECT/$DOWNSTREAM
 
-find $BASE/$UPSTREAM -name $UPSTREAM*.input -exec cp {} $BASE/$UPSTREAM/$DOWNSTREAM/$DOWNSTREAM.input \;
-find $BASE/$UPSTREAM -name $UPSTREAM*.prm -exec cp {} $BASE/$UPSTREAM/$DOWNSTREAM/$DOWNSTREAM.prm \;
-find $BASE/$UPSTREAM -name $UPSTREAM*.key -exec cp {} $BASE/$UPSTREAM/$DOWNSTREAM/$DOWNSTREAM.key \;
+  cp template.input $BASE/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.input
 
-sed -i 's/'"$UPSTREAM"'.*.prm/'"$DOWNSTREAM"'.prm/g' $BASE/$UPSTREAM/$DOWNSTREAM/$DOWNSTREAM.key
+  sed -i 's/dtvalue/'"$DT"'/g' $BASE/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.input
+  sed -i 's/hopvalue/'"$HOP"'/g' $BASE/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.input
 
-#might want to consider changing the job name in each of the sbatch scripts, or make a sbatch array
-cp $BASE/$UPSTREAM/molcas_sub $BASE/$UPSTREAM/$DOWNSTREAM/molcas_sub
-sed -i 's/file_name/'"$DOWNSTREAM"'/g' $BASE/$UPSTREAM/$DOWNSTREAM/molcas_sub
+  find $BASE/$PROJECT -name $PROJECT*.prm -exec cp {} $BASE/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.prm \;
+  find $BASE/$PROJECT -name $PROJECT*.key -exec cp {} $BASE/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.key \;
 
-find $BASE/$UPSTREAM/TMP -name $UPSTREAM*.$STEP -exec cp {} $BASE/$UPSTREAM/$DOWNSTREAM/$DOWNSTREAM.xyz \;
+  sed -i 's/'"$PROJECT"'.*.prm/'"$DOWNSTREAM"'.prm/g' $BASE/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.key
+
+  #might want to consider changing the job name in each of the sbatch scripts, or make a sbatch array
+  cp $BASE/$PROJECT/molcas_sub $BASE/$PROJECT/$DOWNSTREAM/molcas_sub
+  sed -i 's/file_name/'"$DOWNSTREAM"'/g' $BASE/$PROJECT/$DOWNSTREAM/molcas_sub
+
+  find $BASE/$PROJECT/TMP -name $PROJECT*.$STEP -exec cp {} $BASE/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.xyz \;
+
+done
