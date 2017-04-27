@@ -22,20 +22,21 @@ do
                 p) PROJECT=${OPTARG};;
                 b) BEGINTIMESTEP=${OPTARG};;
                 e) ENDTIMESTEP=${OPTARG};;
-                s) STEPSIZE${OPTARG};;
+                s) STEPSIZE=${OPTARG};;
                 dt) DT=${OPTARG};;
                 hop) HOP=${OPTARG};;
         esac
 done
 
+
+if [ ! -d "$ROOT/$PROJECT" ]; then
+  echo ERROR: PROJECT folder path is incorrect
+  exit 1
+fi
+
 for ((STEP=$BEGINTIMESTEP; STEP<=$ENDTIMESTEP; STEP+=$STEPSIZE)); do
 
   DOWNSTREAM=Trajectory_${STEP}fs
-
-  if [ ! -d "$ROOT/$PROJECT" ]; then
-    echo ERROR: PROJECT folder path is incorrect
-    exit 1
-  fi
 
   if [ -d "$ROOT/$PROJECT/$DOWNSTREAM" ]; then
     echo ERROR: Downstream folder path already exists
