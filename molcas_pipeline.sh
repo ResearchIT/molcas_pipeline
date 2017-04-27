@@ -18,6 +18,7 @@
 # d) dt (typically 41.  41 atomic units (a.u.) ~ 1 femtosecond to be put in input file)
 # h) hop (energy hop flag to be put in input file, integer value 0 or greater)
 
+#example
 
 while getopts r:p:b:e:s:d:h: option
 do
@@ -68,5 +69,9 @@ for ((STEP=$BEGINTIMESTEP; STEP<=$ENDTIMESTEP; STEP+=$STEPSIZE)); do
   find $ROOT/$PROJECT/TMP -name $PROJECT*.$STEP -exec cp {} $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.xyz \;
 
   sed -n '/Velocities [(]*time.*'"$(echo "$STEP*$DT" | bc)"'/,/^$/{//!p}' $ROOT/$PROJECT/$PROJECT*.log | tail -n +4 | head -n -1 | cut -b 17-56 > $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.velocity.xyz
+
+  cd $ROOT/$PROJECT/$DOWNSTREAM
+
+  sbatch molcas_sub
 
 done
