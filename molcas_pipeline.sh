@@ -14,7 +14,7 @@
 # p = PROJECT folder - folder name of initial molcas run
 # s = step number for downstream
 
-while getopts r:p:b:e:s:dt:hop: option
+while getopts r:p:b:e:s:d:h: option
 do
         case "${option}"
         in
@@ -23,8 +23,8 @@ do
                 b) BEGINTIMESTEP=${OPTARG};;
                 e) ENDTIMESTEP=${OPTARG};;
                 s) STEPSIZE=${OPTARG};;
-                dt) DT=${OPTARG};;
-                hop) HOP=${OPTARG};;
+                d) DT=${OPTARG};;
+                h) HOP=${OPTARG};;
         esac
 done
 
