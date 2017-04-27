@@ -2,11 +2,12 @@
 
 #notes
 #PROJECT naming convention is molecule_XXsolv_temp (on the folder)
-#the files additionally have a timestep added molecule_XXsolv_temp
+#the files additionally have a timestep added e.g. molecule_XXsolv_temp_timestep
 
 #assumptions
 # project folder name will be used as the prefix of the input,prm,key,etc. filenames
-#
+# e.g. project folder will be : HN3_73solv_298K, files in the folder may be HN3_73solv_298K_114
+# see http://www.molcas.org/documentation/manual/node77.html for DYNAMIX input options
 
 #arguments:
 # r) root folder (the base folder that your molcas project folder is located inside of), e.g. /work/LAS/some-lab/user/
@@ -14,8 +15,9 @@
 # b) begintimestep
 # e) endtimestep
 # s) timestep size
-# d) dt (typically 41 = 1 femtosecond to be put in input file)
-# h) hop (energy hop flag to be put in input file)
+# d) dt (typically 41.  41 atomic units (a.u.) ~ 1 femtosecond to be put in input file)
+# h) hop (energy hop flag to be put in input file, integer value 0 or greater)
+
 
 while getopts r:p:b:e:s:d:h: option
 do
@@ -65,6 +67,6 @@ for ((STEP=$BEGINTIMESTEP; STEP<=$ENDTIMESTEP; STEP+=$STEPSIZE)); do
 
   find $ROOT/$PROJECT/TMP -name $PROJECT*.$STEP -exec cp {} $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.xyz \;
 
-  sed -n '/Velocities [(]*time.*8200/,/^$/{//!p}' $ROOT/$PROJECT/$PROJECT*.log | tail -n +4 | head -n -1 | cut -b 17-56 > $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.velocity.xyz
+  sed -n '/Velocities [(]*time.*'"$(echo "$STEP*$DT" | bc)"'/,/^$/{//!p}' $ROOT/$PROJECT/$PROJECT*.log | tail -n +4 | head -n -1 | cut -b 17-56 > $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.velocity.xyz
 
 done
