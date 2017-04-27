@@ -74,4 +74,6 @@ for ((STEP=$BEGINTIMESTEP; STEP<=$ENDTIMESTEP; STEP+=$STEPSIZE)); do
 
   sbatch molcas_sub
 
+  cd -
+
 done
