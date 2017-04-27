@@ -1,0 +1,65 @@
+> EXPORT MOLCAS_MOLDEN=ON
+
+>> COPY $InpDir/$Project.xyz $WorkDir
+>> COPY $InpDir/$Project.key $WorkDir
+>> COPY $InpDir/$Project.prm $WorkDir
+
+&GATEWAY
+  Tinker
+  Basis= 3-21G
+  Group= nosym
+  RICD
+
+>> COPY $InpDir/$Project.velocity.xyz $WorkDir
+
+>>  FOREACH  ITER  in  (1  ..  500)
+
+&SEWARD
+  Title = QMMM test dynamics with tinker and casscf
+  DoAnalytical
+
+&Espf
+  External = Tinker MULLIKEN
+
+>>  IF  (  $ITER  =  1  )
+
+&RASSCF
+  LUMORB
+  FileOrb=  $Project.GssOrb
+  Symmetry=  1
+  Spin=  1
+  Charge= 0
+  nActEl=  8  0  0
+  Inactive=  7
+  RAS2=  6
+  CIroot=  2  2  1
+
+>>  COPY  $Project.JobIph  $Project.JobOld
+
+>>  ENDIF
+
+&RASSCF
+  JOBIPH;  CIRESTART
+  Symmetry=  1
+  Spin=  1
+  Charge= 0
+  nActEl=  8  0  0
+  Inactive= 7
+  RAS2=  6
+  CIroot=  2  2  1
+  MDRLXR=  2
+
+>>  COPY  $Project.JobIph  $Project.JobOld
+
+&ALASKA
+
+&DYNAMIX
+  VELVer
+  DT=  dtvalue
+  VELO=  1
+  THER=  0
+  TEMP= 298.15
+  HOP=  hopvalue
+
+>>  END  DO
+
