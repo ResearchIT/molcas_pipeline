@@ -9,7 +9,7 @@
 
 
 #arguments:
-# b = base directory - absolute full path of the folder
+# b = ROOT directory - absolute full path of the folder
 #     which contains the folder with the initial molcas run
 # p = PROJECT folder - folder name of initial molcas run
 # s = step number for downstream
@@ -18,7 +18,7 @@ while getopts r:p:b:e:s:dt:hop: option
 do
         case "${option}"
         in
-                r) BASE=${OPTARG};;
+                r) ROOT=${OPTARG};;
                 p) PROJECT=${OPTARG};;
                 b) BEGINTIMESTEP=${OPTARG};;
                 e) ENDTIMESTEP=${OPTARG};;
@@ -32,33 +32,33 @@ for ((STEP=$BEGINTIMESTEP; STEP<=$ENDTIMESTEP; STEP+=$STEPSIZE)); do
 
   DOWNSTREAM=Trajectory_${STEP}fs
 
-  if [ ! -d "$BASE/$PROJECT" ]; then
+  if [ ! -d "$ROOT/$PROJECT" ]; then
     echo ERROR: PROJECT folder path is incorrect
     exit 1
   fi
 
-  if [ -d "$BASE/$PROJECT/$DOWNSTREAM" ]; then
+  if [ -d "$ROOT/$PROJECT/$DOWNSTREAM" ]; then
     echo ERROR: Downstream folder path already exists
     exit 1
   fi
 
 
-  mkdir $BASE/$PROJECT/$DOWNSTREAM
+  mkdir $ROOT/$PROJECT/$DOWNSTREAM
 
-  cp template.input $BASE/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.input
+  cp template.input $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.input
 
-  sed -i 's/dtvalue/'"$DT"'/g' $BASE/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.input
-  sed -i 's/hopvalue/'"$HOP"'/g' $BASE/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.input
+  sed -i 's/dtvalue/'"$DT"'/g' $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.input
+  sed -i 's/hopvalue/'"$HOP"'/g' $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.input
 
-  find $BASE/$PROJECT -name $PROJECT*.prm -exec cp {} $BASE/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.prm \;
-  find $BASE/$PROJECT -name $PROJECT*.key -exec cp {} $BASE/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.key \;
+  find $ROOT/$PROJECT -name $PROJECT*.prm -exec cp {} $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.prm \;
+  find $ROOT/$PROJECT -name $PROJECT*.key -exec cp {} $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.key \;
 
-  sed -i 's/'"$PROJECT"'.*.prm/'"$DOWNSTREAM"'.prm/g' $BASE/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.key
+  sed -i 's/'"$PROJECT"'.*.prm/'"$DOWNSTREAM"'.prm/g' $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.key
 
   #might want to consider changing the job name in each of the sbatch scripts, or make a sbatch array
-  cp $BASE/$PROJECT/molcas_sub $BASE/$PROJECT/$DOWNSTREAM/molcas_sub
-  sed -i 's/file_name/'"$DOWNSTREAM"'/g' $BASE/$PROJECT/$DOWNSTREAM/molcas_sub
+  cp $ROOT/$PROJECT/molcas_sub $ROOT/$PROJECT/$DOWNSTREAM/molcas_sub
+  sed -i 's/file_name/'"$DOWNSTREAM"'/g' $ROOT/$PROJECT/$DOWNSTREAM/molcas_sub
 
-  find $BASE/$PROJECT/TMP -name $PROJECT*.$STEP -exec cp {} $BASE/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.xyz \;
+  find $ROOT/$PROJECT/TMP -name $PROJECT*.$STEP -exec cp {} $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.xyz \;
 
 done
