@@ -62,4 +62,6 @@ for ((STEP=$BEGINTIMESTEP; STEP<=$ENDTIMESTEP; STEP+=$STEPSIZE)); do
 
   find $ROOT/$PROJECT/TMP -name $PROJECT*.$STEP -exec cp {} $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.xyz \;
 
+  HN3_73solv_298K]$ sed -n '/Velocities [(]*time.*8200/,/^$/{//!p}' HN3_73solv_298K_114.log > $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.velocity.xyz
+
 done
