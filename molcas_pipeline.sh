@@ -15,12 +15,12 @@
 # b) begintimestep
 # e) endtimestep
 # s) timestep size
-# d) dt (typically 41.  41 atomic units (a.u.) ~ 1 femtosecond to be put in input file)
-# h) hop (energy hop flag to be put in input file, integer value 0 or greater)
-
+# d) dt (typically 41.  41 atomic units (a.u.) ~ 1 femtosecond) this will be used to find the appropriate timestep in the log file
+#       so it needs to represent the timestep used for the previous run (the project level), it can be tuned in the input template for this experiment
+# t) template - full path to the input template
 #example
 
-while getopts r:p:b:e:s:d:h: option
+while getopts r:p:b:e:s:d:h:t: option
 do
         case "${option}"
         in
@@ -30,13 +30,18 @@ do
                 e) ENDTIMESTEP=${OPTARG};;
                 s) STEPSIZE=${OPTARG};;
                 d) DT=${OPTARG};;
-                h) HOP=${OPTARG};;
+                t) TEMPLATE=${OPTARG};;
         esac
 done
 
 
 if [ ! -d "$ROOT/$PROJECT" ]; then
   echo ERROR: PROJECT folder path is incorrect
+  exit 1
+fi
+
+if [ ! -f "$TEMPLATE" ]; then
+  echo ERROR: template.input path is incorrect
   exit 1
 fi
 
@@ -52,10 +57,7 @@ for ((STEP=$BEGINTIMESTEP; STEP<=$ENDTIMESTEP; STEP+=$STEPSIZE)); do
 
   mkdir $ROOT/$PROJECT/$DOWNSTREAM
 
-  cp template.input $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.input
-
-  sed -i 's/dtvalue/'"$DT"'/g' $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.input
-  sed -i 's/hopvalue/'"$HOP"'/g' $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.input
+  cp $TEMPLATE $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.input
 
   find $ROOT/$PROJECT -name $PROJECT*.prm -exec cp {} $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.prm \;
   find $ROOT/$PROJECT -name $PROJECT*.key -exec cp {} $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.key \;
