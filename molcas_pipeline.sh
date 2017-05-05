@@ -59,8 +59,8 @@ for ((STEP=$BEGINTIMESTEP; STEP<=$ENDTIMESTEP; STEP+=$STEPSIZE)); do
 
   cp $TEMPLATE $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.input
 
-  find $ROOT/$PROJECT -maxdepth 0 -name $PROJECT*.prm -exec cp {} $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.prm \;
-  find $ROOT/$PROJECT -maxdepth 0 -name $PROJECT*.key -exec cp {} $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.key \;
+  find $ROOT/$PROJECT -maxdepth 1 -name $PROJECT*.prm -exec cp {} $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.prm \;
+  find $ROOT/$PROJECT -maxdepth 1 -name $PROJECT*.key -exec cp {} $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.key \;
 
   sed -i 's/'"$PROJECT"'.*.prm/'"$DOWNSTREAM"'.prm/g' $ROOT/$PROJECT/$DOWNSTREAM/$DOWNSTREAM.key
 
